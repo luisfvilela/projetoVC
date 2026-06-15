@@ -113,8 +113,22 @@ def main():
                         teclado.release(Key.media_play_pause)
                         print("Comando enviado. Verifique se a música tocou/pausou.")
                         ultimo_comando_tempo = tempo_atual
+
                 elif dedos_levantados == 0:
                     gesto_atual = "Mao Fechada (Mudo)"
+
+                elif dedos_levantados == 1 and (tempo_atual - ultimo_comando_tempo) > COOLDOWN_PLAY:
+                    gesto_atual = "Um dedo"
+                    teclado.press(Key.media_next)
+                    teclado.release(Key.media_next)
+                    ultimo_comando_tempo = tempo_atual
+
+                elif dedos_levantados == 2 and (tempo_atual - ultimo_comando_tempo) > COOLDOWN_PLAY:
+                    gesto_atual = "Dois dedos"
+                    teclado.press(Key.media_previous)
+                    teclado.release(Key.media_previous)
+                    ultimo_comando_tempo = tempo_atual
+
                 else:
                     gesto_atual = f"Gesto Desconhecido ({dedos_levantados} dedos)"
 
