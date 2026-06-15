@@ -1,5 +1,6 @@
 import cv2
 import mediapipe as mp
+import math
 
 # Inicializando os módulos do MediaPipe
 mp_maos = mp.solutions.hands
@@ -18,6 +19,10 @@ cap = cv2.VideoCapture(0)
 
 print("Pressione 'q' no terminal ou na janela para sair.")
 
+# Variaveis para movimento
+yAnterior = None
+LIMIAR_PINCA = 0.05
+
 while cap.isOpened():
     sucesso, frame = cap.read()
     if not sucesso:
@@ -31,6 +36,7 @@ while cap.isOpened():
     # Processa a imagem para encontrar as mãos
     resultado = maos.process(frame_rgb)
 
+    tem_pinca = False
     gesto_atual = "Nenhum"
 
     # Se encontrou alguma mão na tela
@@ -46,7 +52,22 @@ while cap.isOpened():
             # significa que o dedo está levantado.
             
             dedos_levantados = 0
-            
+
+            polegar = landmarks.landmark[4]            
+            indicador = landmarks.landmark[8]
+            centro_mao = landmarks.landmark[9].y
+
+            distanciaPinca = math.sqrt((polegar.x - indicador.x)**2 + (polegar.y - indicador.y)**2)
+            distanciaResto = math.sqrt((landmarks.landmark[12].x - indicador.x)**2 + (landmarks.landmark[12].y - indicador.y)**2)
+            if distanciaPinca <= LIMIAR_PINCA and distanciaResto >= 2*LIMIAR_PINCA:
+                tem_pinca = True
+                gesto_atual = "pinca"
+                
+                continue
+
+
+
+
             # Índices das pontas: Indicador(8), Médio(12), Anelar(16), Mindinho(20)
             pontas = [8, 12, 16, 20]
             juntas = [6, 10, 14, 18]
@@ -59,6 +80,8 @@ while cap.isOpened():
             # Dica: Essa lógica do polegar inverte dependendo da mão (esquerda/direita), 
             # mas simplificaremos focando nos outros 4 dedos.
             
+            
+
             if dedos_levantados == 4:
                 gesto_atual = "Mao Aberta (Pausar/Play)"
             elif dedos_levantados == 0:
