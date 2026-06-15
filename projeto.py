@@ -31,6 +31,8 @@ def main():
     LIMIAR_PINCA = 0.05
     COOLDOWN_PLAY = 1.0
     ultimo_comando_tempo = 0
+    contador = 0
+    tolerancia_next_previous = 25
 
     while cap.isOpened():
         sucesso, frame = cap.read()
@@ -109,8 +111,9 @@ def main():
                     gesto_atual = "Mao Aberta (Pausar/Play)"
                     if (tempo_atual - ultimo_comando_tempo) > COOLDOWN_PLAY:
                         # Simula a tecla física multimídia (bypassa bugs do Deezer Lite)
-                        teclado.press(Key.media_play_pause)
-                        teclado.release(Key.media_play_pause)
+                        #teclado.press(Key.media_play_pause)
+                        #teclado.release(Key.media_play_pause)
+                        subprocess.run(["playerctl", "play-pause"])
                         print("Comando enviado. Verifique se a música tocou/pausou.")
                         ultimo_comando_tempo = tempo_atual
 
@@ -119,15 +122,32 @@ def main():
 
                 elif dedos_levantados == 1 and (tempo_atual - ultimo_comando_tempo) > COOLDOWN_PLAY:
                     gesto_atual = "Um dedo"
-                    teclado.press(Key.media_next)
-                    teclado.release(Key.media_next)
+                    if gesto_atual!="Um dedo":
+                        contador=0
+                        continue
+                    contador+=1
+                    if contador<tolerancia_next_previous:
+                        continue
+                    #teclado.press(Key.media_next)
+                    #teclado.release(Key.media_next)
+                    subprocess.run(["playerctl", "next"])
                     ultimo_comando_tempo = tempo_atual
+                    contador = 0
 
                 elif dedos_levantados == 2 and (tempo_atual - ultimo_comando_tempo) > COOLDOWN_PLAY:
                     gesto_atual = "Dois dedos"
-                    teclado.press(Key.media_previous)
-                    teclado.release(Key.media_previous)
+                    if gesto_atual!="Dois dedos":
+                        contador=0
+                        continue
+                    contador+=1
+                    if contador<tolerancia_next_previous:
+                        continue
+                    
+                    #teclado.press(Key.media_previous)
+                    #teclado.release(Key.media_previous)
+                    subprocess.run(["playerctl", "previous"])
                     ultimo_comando_tempo = tempo_atual
+                    contador = 0
 
                 else:
                     gesto_atual = f"Gesto Desconhecido ({dedos_levantados} dedos)"
