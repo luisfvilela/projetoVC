@@ -20,6 +20,7 @@ cap = cv2.VideoCapture(0)
 print("Pressione 'q' no terminal ou na janela para sair.")
 
 # Variaveis para movimento
+volume = 0
 yAnterior = None
 LIMIAR_PINCA = 0.05
 
@@ -51,6 +52,8 @@ while cap.isOpened():
             # No eixo Y, o topo da tela é 0. Se a ponta do dedo tem um Y MENOR que a junta,
             # significa que o dedo está levantado.
             
+            h , w , _ = frame.shape
+
             dedos_levantados = 0
 
             polegar = landmarks.landmark[4]            
@@ -61,12 +64,21 @@ while cap.isOpened():
             distanciaResto = math.sqrt((landmarks.landmark[12].x - indicador.x)**2 + (landmarks.landmark[12].y - indicador.y)**2)
             if distanciaPinca <= LIMIAR_PINCA and distanciaResto >= 2*LIMIAR_PINCA:
                 tem_pinca = True
-                gesto_atual = "pinca"
-                
+                if(yAnterior == None):
+                    yAnterior = centro_mao
+
+                deltaY = yAnterior - centro_mao 
+                volume += deltaY * 100
+                volume = max(volume , 0)
+                volume = min(volume , 100)
+
+                gesto_atual = "Pinca : Volume " + str(volume)
+                yAnterior = centro_mao
                 continue
 
 
 
+            yAnterior = None
 
             # Índices das pontas: Indicador(8), Médio(12), Anelar(16), Mindinho(20)
             pontas = [8, 12, 16, 20]
@@ -88,6 +100,7 @@ while cap.isOpened():
                 gesto_atual = "Mao Fechada (Mudo)"
             else:
                 gesto_atual = f"Gesto Desconhecido ({dedos_levantados} dedos)"
+
 
     # Mostra o frame com os desenhos
     cv2.imshow('Rastreamento de Gestos', frame)
