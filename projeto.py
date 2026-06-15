@@ -77,8 +77,8 @@ def main():
 
                     deltaY = yAnterior - centro_mao 
                     volume += deltaY * 150
-                    volume = int(max(0, min(volume, 100)))
-                    subprocess.run(["pactl", "set-sink-volume", "@DEFAULT_SINK@", f"{volume}%"])
+                    volume = max(0, min(volume, 100))
+                    subprocess.run(["pactl", "set-sink-volume", "@DEFAULT_SINK@", f"{int(volume)}%"])
 
 
                     gesto_atual = "Pinca : Volume " + str(volume)
@@ -109,6 +109,7 @@ def main():
                         # Simula a tecla física multimídia (bypassa bugs do Deezer Lite)
                         teclado.press(Key.media_play_pause)
                         teclado.release(Key.media_play_pause)
+                        print("Comando enviado. Verifique se a música tocou/pausou.")
                         ultimo_comando_tempo = tempo_atual
                 elif dedos_levantados == 0:
                     gesto_atual = "Mao Fechada (Mudo)"
