@@ -24,8 +24,9 @@ def main():
 
     print("Pressione 'q' no terminal ou na janela para sair.")
 
+    cmd = "pactl get-sink-volume @DEFAULT_SINK@ | grep -o '[0-9]*%' | sed -n '1 s/%//p'"
 # Variaveis para movimento
-    volume = 0
+    volume = int(subprocess.run(cmd, shell=True, capture_output=True, text=True).stdout)
     yAnterior = None
     LIMIAR_PINCA = 0.05
     COOLDOWN_PLAY = 1.0
@@ -73,6 +74,7 @@ def main():
                 if distanciaPinca <= LIMIAR_PINCA and distanciaResto >= 2*LIMIAR_PINCA:
                     tem_pinca = True
                     if(yAnterior == None):
+
                         yAnterior = centro_mao
 
                     deltaY = yAnterior - centro_mao 
