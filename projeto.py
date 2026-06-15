@@ -23,7 +23,8 @@ while cap.isOpened():
     if not sucesso:
         print("Ignorando frame vazio da câmera.")
         continue
-
+    
+    frame = cv2.flip(frame,1)
     # O OpenCV usa BGR por padrão, mas o MediaPipe precisa de RGB
     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     
