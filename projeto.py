@@ -3,8 +3,13 @@ import mediapipe as mp
 import math
 import subprocess
 import time
+import argparse
 from pynput.keyboard import Key, Controller
 teclado = Controller()
+
+parser = argparse.ArgumentParser(description="Controlador de Musica utilizando Visão Computacional")
+parser.add_argument("-b", "--background",action="store_true")
+iterativo = not parser.parse_args().background
 
 def main():
 # Inicializando os módulos do MediaPipe
@@ -55,7 +60,8 @@ def main():
         if resultado.multi_hand_landmarks:
             for landmarks in resultado.multi_hand_landmarks:
                 # Desenha os pontos e as conexões na imagem (opcional, bom para debugar)
-                mp_desenho.draw_landmarks(frame, landmarks, mp_maos.HAND_CONNECTIONS)
+                if iterativo:
+                    mp_desenho.draw_landmarks(frame, landmarks, mp_maos.HAND_CONNECTIONS)
 
                 # LÓGICA DO GESTO: Mão aberta vs Mão fechada
                 # Pegamos a ponta dos dedos (índice 8, 12, 16, 20) e comparamos 
@@ -152,11 +158,12 @@ def main():
                 else:
                     gesto_atual = f"Gesto Desconhecido ({dedos_levantados} dedos)"
 
-
-        desenhar_hud_volume(frame, volume, tem_pinca)
+        if iterativo:
+            desenhar_hud_volume(frame, volume, tem_pinca)
 
         # Mostra o frame final na tela
-        cv2.imshow('Rastreamento de Gestos', frame)
+        if iterativo:
+            cv2.imshow('Rastreamento de Gestos', frame)
         print(f"Gesto Detectado: {gesto_atual}".ljust(50), end='\r')
 
         # Sai do loop se apertar 'q'
