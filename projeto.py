@@ -1,5 +1,6 @@
 import cv2
 import mediapipe as mp
+import numpy
 import math
 import subprocess
 import time
@@ -33,6 +34,7 @@ def main():
 # Variaveis para movimento
     volume = int(subprocess.run(cmd, shell=True, capture_output=True, text=True).stdout)
     yAnterior = None
+    SENS_BASE = 150
     LIMIAR_PINCA = 0.05
     COOLDOWN_PLAY = 1.0
     ultimo_comando_tempo = 0
@@ -83,16 +85,21 @@ def main():
                 if distanciaPinca <= LIMIAR_PINCA and distanciaResto >= 2*LIMIAR_PINCA:
                     tem_pinca = True
                     if(yAnterior == None):
-
                         yAnterior = centro_mao
-
+                        continue
+                    
+                    vetDirecao = numpy.array([landmarks.landmark[9].x - landmarks.landmark[16].x, landmarks.landmark[9].y - landmarks.landmark[16].y])
+                    versorDirecao = vetDirecao / numpy.linalg.norm(vetDirecao)
+                    angulo = numpy.array([1,0]).dot(versorDirecao)
+                    sens = max(angulo,0) - 0.5
+                    
                     deltaY = yAnterior - centro_mao 
-                    volume += deltaY * sensibilidade_volume
+                    volume += deltaY * (SENS_BASE + sens * SENS_BASE)
                     volume = max(0, min(volume, 100))
                     subprocess.run(["pactl", "set-sink-volume", "@DEFAULT_SINK@", f"{int(volume)}%"])
 
 
-                    gesto_atual = "Pinca : Volume " + str(volume)
+                    gesto_atual = "Pinca : Volume " + str(volume) +  " Sensibilidade: " + str(sens)
                     yAnterior = centro_mao
                     continue
 
