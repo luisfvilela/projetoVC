@@ -38,6 +38,7 @@ def main():
     ultimo_comando_tempo = 0
     contador = 0
     tolerancia_next_previous = 25
+    sensibilidade_volume = 350
 
     while cap.isOpened():
         sucesso, frame = cap.read()
@@ -86,7 +87,7 @@ def main():
                         yAnterior = centro_mao
 
                     deltaY = yAnterior - centro_mao 
-                    volume += deltaY * 150
+                    volume += deltaY * sensibilidade_volume
                     volume = max(0, min(volume, 100))
                     subprocess.run(["pactl", "set-sink-volume", "@DEFAULT_SINK@", f"{int(volume)}%"])
 
