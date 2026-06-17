@@ -15,9 +15,15 @@
 
 - Skip : Um Dedo levantado
 
-- Voltar Musica : Dois Dedos 
+<img src="imagens/um-dedo.png">
 
-- Ajustar Volume : Pinça <br> Quanto mais inclinado a pinça maior a sensibilidade. Confira a saída no terminal
+- Voltar Musica : Dois Dedos levantados
+
+<img src="imagens/dois-dedos.png">
+
+- Ajustar Volume : Pinça (Baixo / Cima) <br> Quanto mais inclinado a pinça maior a sensibilidade. Confira a saída no terminal
+
+<img src="imagens/pinca.png">
 
 ## Instalação e Execução 
 
