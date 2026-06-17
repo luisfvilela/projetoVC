@@ -168,10 +168,8 @@ def main():
 
         if iterativo:
             desenhar_hud_volume(frame, volume, tem_pinca)
-
-        # Mostra o frame final na tela
-        if iterativo:
             cv2.imshow('Rastreamento de Gestos', frame)
+            
         print(f"Gesto Detectado: {gesto_atual}".ljust(50), end='\r')
 
         # Sai do loop se apertar 'q'
